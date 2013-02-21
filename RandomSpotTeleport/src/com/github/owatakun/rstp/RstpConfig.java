@@ -67,18 +67,19 @@ public class RstpConfig {
 	/**
 	 * 指定した名前のポイントを削除
 	 */
-	public void removePoint(String name){
+	public Point removePoint(String name){
 		//forループとやってることはだいたい同じ
 		//ite.removeを利用するためにこの形式に。
 		//java イテレータで検索
 		Iterator<Point> ite = points.iterator();
 		while(ite.hasNext()){
 			Point p = ite.next();
-			if(p.getName().equals(name)){
+			if(p.getName().equalsIgnoreCase(name)){
 				ite.remove();
-				break;
+				return p;
 			}
 		}
+		return null;
 	}
 
 	/**

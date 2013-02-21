@@ -37,7 +37,7 @@ public class RstpCommandExecutor implements CommandExecutor{
 		// save
 		if (args.length == 1 && args[0].equalsIgnoreCase("save")) {
 			config.save();
-			sender.sendMessage(Utility.msg("header") + Utility.replaceSection("&2") + "せーぶなう");
+			sender.sendMessage(Utility.msg("header") + Utility.replaceSection("&2") + "設定を保存しました");
 			return true;
 		}
 		// list
@@ -47,6 +47,10 @@ public class RstpCommandExecutor implements CommandExecutor{
 		// addコマンド
 		if (args.length >= 2 && args[0].equalsIgnoreCase("add")) {
 			return execAdd(sender, cmd, commandLabel, args);
+		}
+		// removeコマンド
+		if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
+			return execRemove(sender, cmd, commandLabel, args);
 		}
 		return false; //コマンド形式が変だったらfalseを返す
 	}
@@ -117,12 +121,26 @@ public class RstpCommandExecutor implements CommandExecutor{
 			String tempPoint = args[1] + "," + args[2] + "," + args[3] + "," + args[4];
 			Point point = Point.deserialize(tempPoint);
 			if(point == null) {
-				sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "不正な文字が含まれていたため、ポイントの追加に失敗しました。/rstp add <Name> <x> <y> <z> で再度追加してください");
+				sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "ポイント追加に失敗しました。\n/rstp add <Name> <x> <y> <z> で再度追加してください");
 				return true;
 			}
 			config.addPoint(point);
 			sender.sendMessage(Utility.replaceSection("&2") + "次のポイントを追加しました: " + Utility.replaceSection("&r") + point.getName() + " - " + point.getX() + "," + point.getY() + "," + point.getZ());
 		}
 		return true;
+	}
+	/**
+	 * Removeコマンド実行
+	 */
+	private boolean execRemove(CommandSender sender, Command cmd, String commandLabel, String[] args){
+		// 削除と、削除された場合そのポイントを表示
+		Point removedPoint = config.removePoint(args[1]);
+		if (removedPoint != null) {
+			sender.sendMessage(Utility.replaceSection("&2") + "次のポイントを削除しました: " + Utility.replaceSection("&r") + removedPoint.getName() + " - " + removedPoint.getX() + "," + removedPoint.getY() + "," + removedPoint.getZ());
+			return true;
+		} else {
+			sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "ポイント名" + args[1] + "は存在しません");
+			return true;
+		}
 	}
 }
