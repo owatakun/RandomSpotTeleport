@@ -1,0 +1,17 @@
+name: RandomSpotTeleport
+main: com.github.owatakun.rstp.RandomSpotTeleport
+version: 0.1
+description: Teleport randomly from the set point
+commands:
+  rstp:
+    description: Give the all the privileges of RandomSpotTeleport
+    aliases: randomspotteleport
+    usage: |
+           /<command> - Teleport randomly from the set point.
+           /<command> reload - Reload Configuration file.
+    permission: Randomcolor
+    permission-message: You don't have permission!
+permissions:
+  randomspotteleport.*:
+    description: Give the all the privileges of RandomSpotTeleport
+    default: op
