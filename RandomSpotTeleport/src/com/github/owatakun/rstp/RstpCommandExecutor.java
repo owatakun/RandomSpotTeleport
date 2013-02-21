@@ -23,32 +23,30 @@ public class RstpCommandExecutor implements CommandExecutor{
 	 * コマンド実行
 	 */
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
-		if (cmd.getName().equalsIgnoreCase("rstp")){
-			// reload
-			if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-				config.reload();
-				sender.sendMessage(Utility.msg("header") + Utility.replaceSection("&2") + "設定を再読み込みしました");
-				return true;
-			}
-			// エラーチェック
-			if (config.isSuccesfullyLoaded() == false) {
-				sender.sendMessage(Utility.msg("error") + "Configのフォーマットが不適切なため、リストの取得に失敗しています\nConfigを修正後、/rstp reloadで設定を再読み込みしてください");
-				return true;
-			}
-			// save
-			if (args.length == 1 && args[0].equalsIgnoreCase("save")) {
-				config.save();
-				sender.sendMessage(Utility.msg("header") + Utility.replaceSection("&2") + "せーぶなう");
-				return true;
-			}
-			// list
-			if (args.length >= 1 && args[0].equalsIgnoreCase("list")) {
-				return execList(sender, cmd, commandLabel, args);
-			}
-			// addコマンド
-			if (args.length >= 2 && args[0].equalsIgnoreCase("add")) {
-				return execAdd(sender, cmd, commandLabel, args);
-			}
+		// reload
+		if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
+			config.reload();
+			sender.sendMessage(Utility.msg("header") + Utility.replaceSection("&2") + "設定を再読み込みしました");
+			return true;
+		}
+		// エラーチェック
+		if (!config.isSuccesfullyLoaded()) {
+			sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "Configのフォーマットが不適切なため、リストの取得に失敗しています\nConfigを修正後、/rstp reloadで設定を再読み込みしてください");
+			return true;
+		}
+		// save
+		if (args.length == 1 && args[0].equalsIgnoreCase("save")) {
+			config.save();
+			sender.sendMessage(Utility.msg("header") + Utility.replaceSection("&2") + "せーぶなう");
+			return true;
+		}
+		// list
+		if (args.length >= 1 && args[0].equalsIgnoreCase("list")) {
+			return execList(sender, cmd, commandLabel, args);
+		}
+		// addコマンド
+		if (args.length >= 2 && args[0].equalsIgnoreCase("add")) {
+			return execAdd(sender, cmd, commandLabel, args);
 		}
 		return false; //コマンド形式が変だったらfalseを返す
 	}
@@ -115,7 +113,15 @@ public class RstpCommandExecutor implements CommandExecutor{
 		}
 		// 座標直接指定の場合
 		if (args.length == 5) {
-			sender.sendMessage("test");
+			// String型のPoint形式に整形
+			String tempPoint = args[1] + "," + args[2] + "," + args[3] + "," + args[4];
+			Point point = Point.deserialize(tempPoint);
+			if(point == null) {
+				sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "不正な文字が含まれていたため、ポイントの追加に失敗しました。/rstp add <Name> <x> <y> <z> で再度追加してください");
+				return true;
+			}
+			config.addPoint(point);
+			sender.sendMessage(Utility.replaceSection("&2") + "次のポイントを追加しました: " + Utility.replaceSection("&r") + point.getName() + " - " + point.getX() + "," + point.getY() + "," + point.getZ());
 		}
 		return true;
 	}

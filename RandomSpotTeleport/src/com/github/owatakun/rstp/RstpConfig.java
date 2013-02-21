@@ -52,17 +52,14 @@ public class RstpConfig {
 	 * ポイント追加
 	 */
 	public void addPoint(Point p){
-		boolean added = false;
 		// ポイント名が既存で存在するか確認
 		for (Point tempPoint: points) {
 			if (tempPoint.getName().equalsIgnoreCase(p.getName())) {
 				tempPoint = p;
-				added = true;
+				return;
 			}
 		}
-		if (!added) {
-			points.add(p);
-		}
+		points.add(p);
 	}
 
 	/**
