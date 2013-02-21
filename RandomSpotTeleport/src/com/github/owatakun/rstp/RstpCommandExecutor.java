@@ -78,11 +78,11 @@ public class RstpCommandExecutor implements CommandExecutor{
 		}
 		sender.sendMessage(Utility.replaceSection("&3") + "設定ポイントリスト " + (page * 10 -9) + "～" + max + "件目 / " + list.size() + "件中");
 		for (int i = page * 10 - 10; i < max; i++) {
-			String Name = list.get(i).getName();
+			String name = list.get(i).getName();
 			int x = list.get(i).getX();
 			int y = list.get(i).getY();
 			int z = list.get(i).getZ();
-			sender.sendMessage(Name + " - " + x + "," + y + "," + z);
+			sender.sendMessage(name + " - " + x + "," + y + "," + z);
 		}
 		return true;
 	}
