@@ -116,10 +116,12 @@ public class RstpCommandExecutor implements CommandExecutor{
 				Point tempLoc = list.get(index.get(i));
 				// ブロックの中央にTPするために座標に+0.5する
 				Location loc = new Location(world, tempLoc.getX() + 0.5, tempLoc.getY() + 0.5, tempLoc.getZ() + 0.5);
+				player.sendMessage(Utility.replaceSection("&2") + "Teleporting...");
 				player.teleport(loc);
 			}
 			i++;
 		}
+		sender.sendMessage(Utility.msg("header") + "テレポートを完了しました!");
 		return true;
 	}
 
@@ -258,7 +260,12 @@ public class RstpCommandExecutor implements CommandExecutor{
 		// Location組立
 		Location loc = new Location(tpPlayer.getWorld(), tpPoint.getX() + 0.5, tpPoint.getY() + 0.5, tpPoint.getZ() + 0.5);
 		// テレポート実行
+		tpPlayer.sendMessage(Utility.replaceSection("&2") + "Teleporting...");
 		tpPlayer.teleport(loc);
+		// senderが他人をTPした場合、完了を通知する
+		if (!sender.getName().equalsIgnoreCase(tpPlayer.getName())) {
+			sender.sendMessage(tpPlayer.getName() + " を " + tpPoint.getName() + " へテレポートしました");
+		}
 		return true;
 	}
 }
