@@ -57,8 +57,12 @@ public class RstpCommandExecutor implements CommandExecutor{
 			return execRemove(sender, cmd, commandLabel, args);
 		}
 		// rstpコマンド
-		if (args.length == 0 ) {
+		if (args.length == 0) {
 			return execRstp(sender, cmd, commandLabel, args);
+		}
+		// tpコマンド
+		if (args.length >= 2 && args[0].equalsIgnoreCase("tp")) {
+			return execTp(sender, cmd, commandLabel, args);
 		}
 		return false; //コマンド形式が変だったらfalseを返す
 	}
@@ -204,6 +208,50 @@ public class RstpCommandExecutor implements CommandExecutor{
 			}
 			i++;
 		}
+		return true;
+	}
+	/**
+	 * TPコマンド実行
+	 */
+	private boolean execTp(CommandSender sender, Command cmd, String commandLabel, String[] args){
+		Player tpPlayer = null;
+		// TP対象者が省略されている場合、senderがPlayerであれば、プレイヤー対象にする
+		if (args.length == 2) {
+			if (sender instanceof Player) {
+				tpPlayer = plugin.getServer().getPlayer(sender.getName());
+			} else {
+				sender.sendMessage(Utility.msg("error") + Utility.msg("senderErr"));
+			}
+		} else if (args.length == 3) {
+			// TP対象者が指定されている場合は、そのプレイヤーを対象にする
+			tpPlayer = plugin.getServer().getPlayer(args[2]);
+		} else {
+			// コマンド書式がおかしい場合処理終了
+			sender.sendMessage(Utility.msg("cmdErr") + "\n/rstp tp <PointName> [Player] - 指定ポイントへ(指定者を)テレポート");
+			return true;
+		}
+		// TP対象者がいなかった場合処理終了
+		if (tpPlayer == null) {
+			sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "テレポート対象者が見つかりませんでした");
+			return true;
+		}
+		// TP先のポイントを検索
+		List<Point> list = config.getPoints();
+		Point tpPoint = null;
+		for (Point point: list) {
+			if (point.getName().equalsIgnoreCase(args[1])) {
+				tpPoint = point;
+			}
+		}
+		// TP先が見つからなかった場合処理終了
+		if (tpPoint == null) {
+			sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "テレポート先が見つかりませんでした");
+			return true;
+		}
+		// Location組立
+		Location loc = new Location(tpPlayer.getWorld(), tpPoint.getX() + 0.5, tpPoint.getY() + 0.5, tpPoint.getZ() + 0.5);
+		// テレポート実行
+		tpPlayer.teleport(loc);
 		return true;
 	}
 }
