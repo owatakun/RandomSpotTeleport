@@ -1,8 +1,12 @@
 package com.github.owatakun.rstp;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,11 +16,11 @@ import org.bukkit.plugin.Plugin;
 public class RstpCommandExecutor implements CommandExecutor{
 
 	private RstpConfig config;
-//	private Plugin plugin;
+	private Plugin plugin;
 
 	public RstpCommandExecutor(RstpConfig config, Plugin plugin){
 		this.config = config;
-//		this.plugin = plugin;
+		this.plugin = plugin;
 	}
 
 	/**
@@ -51,6 +55,10 @@ public class RstpCommandExecutor implements CommandExecutor{
 		// removeコマンド
 		if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
 			return execRemove(sender, cmd, commandLabel, args);
+		}
+		// rstpコマンド
+		if (args.length == 0 ) {
+			return execRstp(sender, cmd, commandLabel, args);
 		}
 		return false; //コマンド形式が変だったらfalseを返す
 	}
@@ -139,8 +147,63 @@ public class RstpCommandExecutor implements CommandExecutor{
 			sender.sendMessage(Utility.replaceSection("&2") + "次のポイントを削除しました: " + Utility.replaceSection("&r") + removedPoint.getName() + " - " + removedPoint.getX() + "," + removedPoint.getY() + "," + removedPoint.getZ());
 			return true;
 		} else {
-			sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "ポイント名" + args[1] + "は存在しません");
+			sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "ポイント名 " + args[1] + " は存在しません");
 			return true;
 		}
+	}
+	/**
+	 * Rstpコマンド実行
+	 */
+	private boolean execRstp(CommandSender sender, Command cmd, String commandLabel, String[] args){
+		// ワールド取得、コンソールからの実行は弾く
+		World world;
+		if (sender instanceof Player) {
+			world = ((Player) sender).getWorld();
+		} else if (sender instanceof BlockCommandSender){
+			world = ((BlockCommandSender) sender).getBlock().getWorld();
+		} else {
+			sender.sendMessage(Utility.msg("senderErr"));
+			return true;
+		}
+		// リスト・オンラインプレイヤー取得
+		List<Point> list = config.getPoints();
+		Player[] tempPlayers = plugin.getServer().getOnlinePlayers();
+		// gm0以外をnullにしたプレイヤーリストを作る
+		// テレポート対象人数カウンタ
+		int j = 0;
+		List<Player> players = new ArrayList<Player>();
+		for (Player tempPlayer: tempPlayers) {
+			if (tempPlayer.getGameMode().getValue() == 0) {
+				players.add(tempPlayer);
+				j++;
+			} else {
+				players.add(null);
+			}
+		}
+		// テレポート対象が0人なら中止する
+		if (j == 0) {
+			sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "テレポート実行対象が存在しないため、実行を中止します");
+			return true;
+		}
+		// プレイヤーの方が多い場合は中止する
+		if (list.size() < j) {
+			sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "テレポート箇所よりオンライン人数が多いため、実行を中止します");
+			return true;
+		}
+		// リストをシャッフル
+		Collections.shuffle(players);
+		// テレポート処理
+		int i = 0;
+		for (Player player: players) {
+			if (player != null) {
+				// Location組立
+				Point tempLoc = list.get(i);
+				// ブロックの中央にTPするために座標に+0.5する
+				Location loc = new Location(world, tempLoc.getX() + 0.5, tempLoc.getY() + 0.5, tempLoc.getZ() + 0.5);
+				player.teleport(loc);
+				i++;
+			}
+		}
+		return true;
 	}
 }
