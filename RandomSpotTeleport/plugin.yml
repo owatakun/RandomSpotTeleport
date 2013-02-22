@@ -8,7 +8,12 @@ commands:
     aliases: randomspotteleport
     usage: |
            /<command> - Teleport randomly from the set point.
+           /<command> list - View the point List.
+           /<command> add <PointName> here - Add points to the current position.
+           /<command> add <PointName> <x> <y> <z> - Add points to the specified coordinate.
+           /<command> remove <PointName> - Remove the specified point.
            /<command> reload - Reload Configuration file.
+           /<command> tp <PointName> [PlayerName] - Teleport to the specified location.
     permission: Randomcolor
     permission-message: You don't have permission!
 permissions:
