@@ -9,18 +9,12 @@ import java.util.List;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 
-//#addPoint,removePointしてもファイルに反映されなくなった。　反映したいときにconfig.save
-
-/**
- * RSTPのコンフィグ処理を一任
- * 元々Utilにあった処理を移植
- */
 public class RstpConfig {
 
 	private FileConfiguration config;
 	private Plugin plugin;
 	private boolean pointsLoaded;
-	private LinkedList<Point> points;   //LinkedList:削除が早いがインデックスアクセスができない
+	private LinkedList<Point> points;
 
 	/**
 	 * 初期化
@@ -68,9 +62,6 @@ public class RstpConfig {
 	 * 指定した名前のポイントを削除
 	 */
 	public Point removePoint(String name){
-		//forループとやってることはだいたい同じ
-		//ite.removeを利用するためにこの形式に。
-		//java イテレータで検索
 		Iterator<Point> ite = points.iterator();
 		while(ite.hasNext()){
 			Point p = ite.next();
@@ -111,27 +102,19 @@ public class RstpConfig {
 	 */
 	private void loadPoints(){
 		List<String> tempList = config.getStringList("TPList");
-		// リストの準備)
+		// リストの準備
 		points.clear();
-//		// エラーリストの準備
-//		ArrayList<String> errList = new ArrayList<String>();
-		//るーぷ
+		// ループ
 		for(String temp: tempList) {
-			//Point
+			// Point
 			Point pt = Point.deserialize(temp);
-			//制作失敗ならエラーへ
+			// 制作失敗したらロード完了フラグをfalseにして処理を中止する
 			if(pt == null){
 				pointsLoaded = false;
+				return;
 			}else{
 				points.add(pt);
 			}
 		}
-/*		// えらー
-		if(errList.size() == 0){
-			pointsLoadError = null;
-		}else{
-			pointsLoadError = new ConfigFormatError(errList);
-		}
-*/
 	}
 }

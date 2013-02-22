@@ -1,6 +1,5 @@
 package com.github.owatakun.rstp;
 
-
 public class Point {
 	private String name;
 	private int x, y, z;
@@ -16,11 +15,11 @@ public class Point {
 	public int getX(){ return x;}
 	public int getY(){ return y;}
 	public int getZ(){ return z;}
-	
+
 	public String serialize(){
 		return name + "," + x + "," + y + "," + z;
 	}
-	
+
 	public static Point deserialize(String str){
 		//変数準備
 		String name = "";

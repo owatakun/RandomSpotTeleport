@@ -15,19 +15,22 @@ public class RandomSpotTeleport extends JavaPlugin{
 	 * 有効
 	 */
 	public void onEnable(){
-		//こんふぃぐ
+		// Config
 		config = new RstpConfig(this);
 		config.reload();
-		//こまんど
+		// Command
 		getCommand("rstp").setExecutor(new RstpCommandExecutor(config,this));
-		//・。・
+		// 起動メッセージ
 		getLogger().info("RandomSpotTeleport v" + getDescription().getVersion() + " has been enabled!");
 	}
-	
+
 	/**
 	 * 無効
 	 */
 	public void onDisable(){
+		// リストを保存
+		config.save();
+		// 終了メッセージ
 		getLogger().info("RandomSpotTeleport v" + getDescription().getVersion() + " has been disabled!");
 	}
 }

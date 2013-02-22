@@ -38,13 +38,11 @@ public class RstpCommandExecutor implements CommandExecutor{
 			sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "Configのフォーマットが不適切なため、リストの取得に失敗しています\nConfigを修正後、/rstp reloadで設定を再読み込みしてください");
 			return true;
 		}
-		// save
-		if (args.length == 1 && args[0].equalsIgnoreCase("save")) {
-			config.save();
-			sender.sendMessage(Utility.msg("header") + Utility.replaceSection("&2") + "設定を保存しました");
-			return true;
+		// rstpコマンド
+		if (args.length == 0) {
+			return execRstp(sender, cmd, commandLabel, args);
 		}
-		// list
+		// listコマンド
 		if (args.length >= 1 && args[0].equalsIgnoreCase("list")) {
 			return execList(sender, cmd, commandLabel, args);
 		}
@@ -56,15 +54,73 @@ public class RstpCommandExecutor implements CommandExecutor{
 		if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
 			return execRemove(sender, cmd, commandLabel, args);
 		}
-		// rstpコマンド
-		if (args.length == 0) {
-			return execRstp(sender, cmd, commandLabel, args);
-		}
 		// tpコマンド
 		if (args.length >= 2 && args[0].equalsIgnoreCase("tp")) {
 			return execTp(sender, cmd, commandLabel, args);
 		}
+		// saveコマンド
+		if (args.length == 1 && args[0].equalsIgnoreCase("save")) {
+			config.save();
+			sender.sendMessage(Utility.msg("header") + Utility.replaceSection("&2") + "設定を保存しました");
+			return true;
+		}
 		return false; //コマンド形式が変だったらfalseを返す
+	}
+
+	/**
+	 * Rstpコマンド実行
+	 */
+	private boolean execRstp(CommandSender sender, Command cmd, String commandLabel, String[] args){
+		// ワールド取得、コンソールからの実行は弾く
+		World world;
+		if (sender instanceof Player) {
+			world = ((Player) sender).getWorld();
+		} else if (sender instanceof BlockCommandSender){
+			world = ((BlockCommandSender) sender).getBlock().getWorld();
+		} else {
+			sender.sendMessage(Utility.msg("senderErr"));
+			return true;
+		}
+		// リスト・オンラインプレイヤー取得
+		List<Point> list = config.getPoints();
+		Player[] tempPlayers = plugin.getServer().getOnlinePlayers();
+		// gm0以外を除外したリストを作成
+		List<Player> players = new ArrayList<Player>();
+		for (Player tempPlayer: tempPlayers) {
+			if (tempPlayer.getGameMode().getValue() == 0) {
+				players.add(tempPlayer);
+			}
+		}
+		// テレポート対象が0人なら中止する
+		if (players.size() == 0) {
+			sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "テレポート実行対象が存在しないため、実行を中止します");
+			return true;
+		}
+		// プレイヤーの方が多い場合は中止する
+		if (list.size() < players.size()) {
+			sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "テレポート箇所よりオンライン人数が多いため、実行を中止します");
+			return true;
+		}
+		// インデックスアクセス用シャッフルリストを作成
+		List<Integer> index = new ArrayList<Integer>(list.size());
+		for (int i = 0; i < list.size(); i++) {
+			index.add(i);
+		}
+		// リストをシャッフル
+		Collections.shuffle(index);
+		// テレポート処理
+		int i = 0;
+		for (Player player: players) {
+			if (player != null) {
+				// Location組立
+				Point tempLoc = list.get(index.get(i));
+				// ブロックの中央にTPするために座標に+0.5する
+				Location loc = new Location(world, tempLoc.getX() + 0.5, tempLoc.getY() + 0.5, tempLoc.getZ() + 0.5);
+				player.teleport(loc);
+			}
+			i++;
+		}
+		return true;
 	}
 
 	/**
@@ -145,6 +201,7 @@ public class RstpCommandExecutor implements CommandExecutor{
 		}
 		return true;
 	}
+
 	/**
 	 * Removeコマンド実行
 	 */
@@ -159,61 +216,7 @@ public class RstpCommandExecutor implements CommandExecutor{
 			return true;
 		}
 	}
-	/**
-	 * Rstpコマンド実行
-	 */
-	private boolean execRstp(CommandSender sender, Command cmd, String commandLabel, String[] args){
-		// ワールド取得、コンソールからの実行は弾く
-		World world;
-		if (sender instanceof Player) {
-			world = ((Player) sender).getWorld();
-		} else if (sender instanceof BlockCommandSender){
-			world = ((BlockCommandSender) sender).getBlock().getWorld();
-		} else {
-			sender.sendMessage(Utility.msg("senderErr"));
-			return true;
-		}
-		// リスト・オンラインプレイヤー取得
-		List<Point> list = config.getPoints();
-		Player[] tempPlayers = plugin.getServer().getOnlinePlayers();
-		// gm0以外を除外したリストを作成
-		List<Player> players = new ArrayList<Player>();
-		for (Player tempPlayer: tempPlayers) {
-			if (tempPlayer.getGameMode().getValue() == 0) {
-				players.add(tempPlayer);
-			}
-		}
-		// テレポート対象が0人なら中止する
-		if (players.size() == 0) {
-			sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "テレポート実行対象が存在しないため、実行を中止します");
-			return true;
-		}
-		// プレイヤーの方が多い場合は中止する
-		if (list.size() < players.size()) {
-			sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "テレポート箇所よりオンライン人数が多いため、実行を中止します");
-			return true;
-		}
-		// インデックスアクセス用シャッフルリストを作成
-		List<Integer> index = new ArrayList<Integer>(list.size());
-		for (int i = 0; i < list.size(); i++) {
-			index.add(i);
-		}
-		// リストをシャッフル
-		Collections.shuffle(index);
-		// テレポート処理
-		int i = 0;
-		for (Player player: players) {
-			if (player != null) {
-				// Location組立
-				Point tempLoc = list.get(index.get(i));
-				// ブロックの中央にTPするために座標に+0.5する
-				Location loc = new Location(world, tempLoc.getX() + 0.5, tempLoc.getY() + 0.5, tempLoc.getZ() + 0.5);
-				player.teleport(loc);
-			}
-			i++;
-		}
-		return true;
-	}
+
 	/**
 	 * TPコマンド実行
 	 */
