@@ -138,6 +138,10 @@ public class RstpCommandExecutor implements CommandExecutor{
 			}
 			config.addPoint(point);
 			sender.sendMessage(Utility.replaceSection("&2") + "次のポイントを追加しました: " + Utility.replaceSection("&r") + point.getName() + " - " + point.getX() + "," + point.getY() + "," + point.getZ());
+		} else {
+			// コマンド書式がおかしい場合処理終了
+			sender.sendMessage(Utility.msg("cmdErr") + "\n/rstp add <pointName> here - 現在位置をリストに登録\n/rstp add <pointName> <x> <y> <z> - 指定座標をリストに登録");
+			return true;
 		}
 		return true;
 	}
