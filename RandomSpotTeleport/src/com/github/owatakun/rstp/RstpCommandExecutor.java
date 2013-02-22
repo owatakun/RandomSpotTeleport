@@ -30,8 +30,14 @@ public class RstpCommandExecutor implements CommandExecutor{
 		// reload
 		if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
 			config.reload();
-			sender.sendMessage(Utility.msg("header") + Utility.replaceSection("&2") + "設定を再読み込みしました");
-			return true;
+			// エラーチェック
+			if (config.isSuccesfullyLoaded()) {
+				sender.sendMessage(Utility.msg("header") + Utility.replaceSection("&2") + "設定を再読み込みしました");
+				return true;
+			} else {
+				sender.sendMessage(Utility.msg("error") + Utility.replaceSection("&c") + "Configのフォーマットが不適切なため、リストの取得に失敗しました\nConfigを修正後、/rstp reloadで設定を再読み込みしてください");
+				return true;
+			}
 		}
 		// エラーチェック
 		if (!config.isSuccesfullyLoaded()) {
