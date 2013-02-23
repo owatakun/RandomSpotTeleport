@@ -90,10 +90,10 @@ public class RstpCommandExecutor implements CommandExecutor{
 		// リスト・オンラインプレイヤー取得
 		List<Point> list = config.getPoints();
 		Player[] tempPlayers = plugin.getServer().getOnlinePlayers();
-		// gm0以外を除外したリストを作成
+		// gm1以外を除外したリストを作成
 		List<Player> players = new ArrayList<Player>();
 		for (Player tempPlayer: tempPlayers) {
-			if (tempPlayer.getGameMode().getValue() == 0) {
+			if (tempPlayer.getGameMode().getValue() != 1) {
 				players.add(tempPlayer);
 			}
 		}
