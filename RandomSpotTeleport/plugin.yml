@@ -1,6 +1,6 @@
 name: RandomSpotTeleport
 main: com.github.owatakun.rstp.RandomSpotTeleport
-version: 0.1
+version: 1.0
 description: Teleport randomly from the set point
 commands:
   rstp:
