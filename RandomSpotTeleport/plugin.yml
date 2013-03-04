@@ -7,13 +7,13 @@ commands:
     description: Give the all the privileges of RandomSpotTeleport
     aliases: randomspotteleport
     usage: |
-           /<command> - Teleport randomly from the set point.
-           /<command> list - View the point List.
-           /<command> add <PointName> here - Add points to the current position.
-           /<command> add <PointName> <x> <y> <z> - Add points to the specified coordinate.
-           /<command> remove <PointName> - Remove the specified point.
-           /<command> reload - Reload Configuration file.
-           /<command> tp <PointName> [PlayerName] - Teleport to the specified location.
+           /rstp tp <ListName> - テレポートを実行
+           /rstp reload - 設定のリロード
+           /rstp list <ListName> [pageNo] - リストを表示
+           /rstp add <ListName> <pointName> <here or x y z> - 現在位置(指定位置)をリストに追加
+           /rstp remove <ListName> <pointName> - 指定位置をリストから削除
+           /rstp stp <ListName> <pointName> [playername] - 指定位置に(指定プレイヤーを)TP 省略時はsender
+           /rstp save - 設定をすべて保存
     permission: Randomcolor
     permission-message: You don't have permission!
 permissions:
