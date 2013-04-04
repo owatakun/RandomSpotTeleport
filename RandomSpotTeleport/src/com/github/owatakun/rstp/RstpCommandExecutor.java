@@ -284,8 +284,8 @@ public class RstpCommandExecutor implements CommandExecutor{
 			sender.sendMessage(Utility.msg("Error") + Utility.replaceSection("&c") + "リスト \"" + listName + "\" は読み込みに失敗しているため実行を中止しました");
 			return true;
 		}
-		// hereの場合
-		if (args.length == 4 && args[3].equalsIgnoreCase("here")) {
+		// 現在位置指定の場合(旧here)
+		if (args.length == 3) {
 			// senderがプレイヤーでなければ処理を抜ける
 			if (!(sender instanceof Player)) {
 				sender.sendMessage(Utility.msg("error") + Utility.msg("senderErr"));
@@ -303,7 +303,9 @@ public class RstpCommandExecutor implements CommandExecutor{
 			config.addPoint(listName, point);
 			sender.sendMessage(Utility.replaceSection("&2") + "次のポイントを追加しました: " + Utility.replaceSection("&r") + name + " - " + x + "," + y + "," + z);
 			return true;
-		} else if (args.length == 6) {
+		}
+		/*
+		else if (args.length == 6) {
 			// 座標直接指定の場合
 			// String型のPoint形式に整形
 			String tempPoint = args[2] + "," + args[3] + "," + args[4] + "," + args[5];
@@ -314,12 +316,14 @@ public class RstpCommandExecutor implements CommandExecutor{
 			}
 			config.addPoint(listName, point);
 			sender.sendMessage(Utility.replaceSection("&2") + "次のポイントを追加しました: " + Utility.replaceSection("&r") + point.getName() + " - " + point.getX() + "," + point.getY() + "," + point.getZ());
-		} else {
+		}
+		*/
+		 else {
 			// コマンド書式がおかしい場合処理終了
-			sender.sendMessage(Utility.msg("cmdErr") + "\n/rstp add <pointName> here - 現在位置をリストに登録\n/rstp add <pointName> <x> <y> <z> - 指定座標をリストに登録");
+			sender.sendMessage(Utility.msg("cmdErr") + "\n/rstp add <listName> <pointName> - 現在位置をリストに登録");
 			return true;
 		}
-		return true;
+		//return true;
 	}
 
 	/**
