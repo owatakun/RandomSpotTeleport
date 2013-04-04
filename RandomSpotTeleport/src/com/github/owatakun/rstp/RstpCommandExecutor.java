@@ -285,7 +285,7 @@ public class RstpCommandExecutor implements CommandExecutor{
 			return true;
 		}
 		// 現在位置指定の場合(旧here)
-		if (args.length == 3) {
+		if (args.length >= 2 && args.length <= 3) {
 			// senderがプレイヤーでなければ処理を抜ける
 			if (!(sender instanceof Player)) {
 				sender.sendMessage(Utility.msg("error") + Utility.msg("senderErr"));
@@ -293,7 +293,28 @@ public class RstpCommandExecutor implements CommandExecutor{
 			}
 			// 変数の準備
 			Player player = (Player) sender;
-			String name = args[2];
+			// ポイント名
+			String name = null;
+			// ポイント名省略時
+			if (args.length == 2) {
+				name = String.valueOf(config.getPoints(listName).size() + 1);
+				// ポイント名衝突回避
+				int i = 0;
+				for (Point pt: config.getPoints(listName)) {
+					if (i == 0 && pt.getName().equalsIgnoreCase(name)) {
+						i++;
+						continue;
+					} else if (pt.getName().equalsIgnoreCase(name + "-" + i)) {
+						i++;
+						continue;
+					}
+				}
+				if (i != 0) {
+					name = name + "-" + i;
+				}
+			} else {
+				name = args[2];
+			}
 			Location location = player.getLocation();
 			int x, y, z;
 			x = location.getBlockX();
@@ -320,7 +341,7 @@ public class RstpCommandExecutor implements CommandExecutor{
 		*/
 		 else {
 			// コマンド書式がおかしい場合処理終了
-			sender.sendMessage(Utility.msg("cmdErr") + "\n/rstp add <listName> <pointName> - 現在位置をリストに登録");
+			sender.sendMessage(Utility.msg("cmdErr") + "\n/rstp add <listName> [pointName] - 現在位置をリストに登録");
 			return true;
 		}
 		//return true;
