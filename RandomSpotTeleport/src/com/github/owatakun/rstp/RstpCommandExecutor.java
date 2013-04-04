@@ -156,7 +156,7 @@ public class RstpCommandExecutor implements CommandExecutor{
 		int page;
 		if (args.length == 3 && args[2].matches("^[0-9]*")){
 			// 引数が3つで3つめが数字ならそのまま代入
-			page = Integer.parseInt(args[1]);
+			page = Integer.parseInt(args[2]);
 		} else if (args.length == 2){
 			// 2つめが省略されていたら1ページ
 			page = 1;
@@ -372,7 +372,7 @@ public class RstpCommandExecutor implements CommandExecutor{
 				return true;
 			}
 		} else {
-			sender.sendMessage(Utility.msg("cmdErr" + "\n" + "/rstp remove <ListName> <PointName> - リストからポイントを削除"));
+			sender.sendMessage(Utility.msg(Utility.msg("cmdErr") + "\n" + "/rstp remove <ListName> <PointName> - リストからポイントを削除"));
 			return true;
 		}
 	}
