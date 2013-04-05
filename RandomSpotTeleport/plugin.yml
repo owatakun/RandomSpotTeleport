@@ -12,11 +12,15 @@ commands:
            /rstp list <ListName> [pageNo] - リストを表示
            /rstp add <ListName> [pointName] - 現在位置をリストに追加
            /rstp remove <ListName> <pointName> - 指定位置をリストから削除
-           /rstp stp <ListName> <pointName> [playername] - 指定位置に(指定プレイヤーを)TP 省略時はsender
+           /rstp stp <ListName> <pointName> [playername] - 指定位置に(指定プレイヤーを)TP
            /rstp save - 設定をすべて保存
-    permission: randomspotteleport
+    permission: randomspotteleport.admin
     permission-message: You don't have permission!
 permissions:
   randomspotteleport.*:
     description: Give the all the privileges of RandomSpotTeleport
+    children:
+      randomspotteleport.admin: true
+  randomspotteleport.admin:
+    description: Allow autokicker commands.
     default: op
