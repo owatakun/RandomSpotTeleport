@@ -299,16 +299,22 @@ public class RstpCommandExecutor implements CommandExecutor{
 			if (args.length == 2) {
 				name = String.valueOf(config.getPoints(listName).size() + 1);
 				// ポイント名衝突回避
+				boolean conflict = false;
 				int i = 0;
-				for (Point pt: config.getPoints(listName)) {
-					if (i == 0 && pt.getName().equalsIgnoreCase(name)) {
-						i++;
-						continue;
-					} else if (pt.getName().equalsIgnoreCase(name + "-" + i)) {
-						i++;
-						continue;
+				do {
+					for (Point pt: config.getPoints(listName)) {
+						if (i == 0 && pt.getName().equalsIgnoreCase(name)) {
+							conflict = true;
+							i++;
+							break;
+						} else if (pt.getName().equalsIgnoreCase(name + "-" + i)) {
+							conflict = true;
+							i++;
+							break;
+						}
+						conflict = false;
 					}
-				}
+				} while (conflict);
 				if (i != 0) {
 					name = name + "-" + i;
 				}
